@@ -22,12 +22,13 @@ variables:
 
 contexts:
   main:
+    - include: comment
     - include: commands
 
   commands:
     - match: ^(?=\s*[^\[\{])
       push: command-name
-    - include: expressions
+    # - include: expressions
 
   continued-line:
     - match: (?={{end_chars}})
@@ -52,31 +53,27 @@ contexts:
         - match: (?=\S)
           set: continued-line
     - include: braces
-    - include: substitution
-    - include: escape
-    - include: variable
-    - include: numbers
-    - include: strings
 
   strings:
     - match: '"'
       scope: punctuation.definition.string.begin.ass
       push:
         - meta_scope: string.quoted.double.ass
+        - match: \\\n
+          scope: constant.character.escape.double-quoted.newline.ass
         - match: '"'
           scope: punctuation.definition.string.end.ass
           pop: true
-        - match: \\(?=\n)
-          scope: punctuation.separator.continuation.ass
-          push:
-            - match: \n
-            - match: (?=\S)
-              pop: true
-        - match: ({{}})
-        - include: escape
-        - include: variable
-        # - include: driver
-    - match: '{{unquoted_string}}'
+    #     - match: \\(?=\n)
+    #       scope: punctuation.separator.continuation.ass
+    #       push:
+    #         - match: \n
+    #         - match: (?=\S)
+    #           pop: true
+    #     - match: ({{}})
+    #     - include: escape
+    #     - include: variable
+    # - match: '{{unquoted_string}}'
 
   numbers:
     - match: \b0x\h*\b
@@ -95,26 +92,31 @@ contexts:
   command-name:
     - match: '(?=[a-zA-Z0-9_]+)'
       set: node
-    - match: (?=#)
-      set:
+    - include: comment
+
+  comment:
+    - match: |
+        (?x)
+        (?: ^ [ \t]* | [ \t]+ )
+        (?=\#)
+      captures:
+      push:
         - match: '#'
-          scope: comment.line.number-sign.ass punctuation.definition.comment.ass
+          scope: punctuation.definition.comment.line.number-sign.ass
           set:
-            - meta_content_scope: comment.line.number-sign.ass
-            - match: \n
-              set: command-name
-            - match: \\\\
-            - match: \\\n
-              scope: punctuation.separator.continuation.ass
+          - meta_scope: comment.line.number-sign.ass
+          - match: \n|\z
+            pop: true
 
   node:
     - match: '^[a-zA-Z0-9_]+\s*\n'
       scope: entity.name.function.ass
+    - include: comment
+    - include: node_variable
+    - include: strings
     - include: numbers
     - include: bool
     - include: operators
-    - include: node_variable
-    - include: strings
 
   node_variable:
     - match: '^\s*([a-zA-Z_\.]+)\s'
