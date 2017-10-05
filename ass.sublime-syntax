@@ -112,17 +112,17 @@ contexts:
     - match: '^[a-zA-Z0-9_]+\s*\n'
       scope: entity.name.function.ass
     - include: comment
-    - include: node_variable
-    - include: strings
-    - include: numbers
-    - include: bool
     - include: operators
+    - include: bool
+    - include: numbers
+    - include: strings
+    - include: node_variable
 
   node_variable:
+    - include: numbers
     - match: '^\s*([a-zA-Z_\.]+)\s'
       scope: variable.parameter.ass
     - include: variable_value
-    - include: numbers
 
   variable_value:
     - match: '(([/a-zA-Z0-9_]+)([@/a-zA-Z0-9_\.:]+))+'
