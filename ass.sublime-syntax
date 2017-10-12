@@ -120,12 +120,12 @@ contexts:
 
   node_variable:
     - include: numbers
-    - match: '^\s*([a-zA-Z_\.]+)\s'
+    - match: '^\s*([a-zA-Z0-9_\.]+)\s'
       scope: variable.parameter.ass
     - include: variable_value
 
   variable_value:
-    - match: '(([/a-zA-Z0-9_]+)([@/a-zA-Z0-9_\.:]+))+'
+    - match: '(([/a-zA-Z0-9_]+)([\|@/a-zA-Z0-9_\.:]+))+'
       scope: variable.function.ass
 
   bool:
